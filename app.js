@@ -20,14 +20,44 @@ var blogSchema = new mongoose.Schema(
 
 var Blog = mongoose.model("Blog", blogSchema);
 
-Blog.create({
-    title: "Test 1",
-    image: "https://source.unsplash.com/collection/8610070/600x400",
-    body: "First blog"
+// Blog.create({
+//     title: "Test 1",
+//     image: "https://source.unsplash.com/collection/8610070/600x400",
+//     body: "First blog"
+// });
+
+// Redirect root to Index
+app.get("/", (req, res) => {
+    res.redirect("/blogs");
 });
 
-app.get("/", (req, res) => {
-    res.send("Initialized!");
+// Index Route
+app.get("/blogs", (req, res) => {
+    Blog.find({}, (err, blogs) => {
+        if(err) {
+            console.log("Error retrieving blogs.");
+        }
+        else {
+            res.render("index", {blogs: blogs});     
+        }
+    });
+});
+
+// New blog
+app.get("/blogs/new", (req, res) => {
+    res.render("new");
+});
+
+// Create blog
+app.post("/blogs", (req, res) => {
+    Blog.create(req.body.blog, (err, addedBlog)=> {
+        if(err) {
+            res.render("new");
+        }
+        else {
+            res.redirect("/blogs");
+        }
+    });
 });
 
 app.listen(3000, () => console.log("Server started!"));
