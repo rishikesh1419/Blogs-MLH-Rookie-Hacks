@@ -60,4 +60,16 @@ app.post("/blogs", (req, res) => {
     });
 });
 
+// Show a blog
+app.get("/blogs/:id", (req, res) => {
+    Blog.findById(req.params.id, (err, rtrBlog) => {
+        if(err) {
+            res.redirect("/blogs");
+        }
+        else {
+            res.render("show", {blog: rtrBlog});
+        }
+    });
+});
+
 app.listen(3000, () => console.log("Server started!"));
