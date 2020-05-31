@@ -1,4 +1,5 @@
 const methodOverride = require("method-override"),
+      sanitizer = require("express-sanitizer"),
       bodyParser = require("body-parser"),
       mongoose   = require("mongoose"),
       express    = require("express"),
@@ -7,6 +8,7 @@ const methodOverride = require("method-override"),
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(sanitizer());
 app.use(methodOverride("_method"));
 
 mongoose.connect("mongodb://localhost/blogs_app")
@@ -52,6 +54,7 @@ app.get("/blogs/new", (req, res) => {
 
 // Create blog
 app.post("/blogs", (req, res) => {
+    req.body.blog.body = req.sanitize(req.body.blog.body);
     Blog.create(req.body.blog, (err, addedBlog)=> {
         if(err) {
             res.render("new");
@@ -88,6 +91,7 @@ app.get("/blogs/:id/edit", (req, res) => {
 
 // Update blog
 app.put("/blogs/:id", (req, res) => {
+    req.body.blog.body = req.sanitize(req.body.blog.body);
     Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updBlog) => {
         if(err) {
             res.redirect("/blogs");
